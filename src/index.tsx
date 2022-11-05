@@ -4,6 +4,7 @@ import App from './App';
 import './index.css';
 import {
 	createBrowserRouter,
+	Navigate,
 	RouterProvider,
 } from "react-router-dom";
 import Auth from './pages/Auth';
@@ -20,10 +21,12 @@ const router = createBrowserRouter([
 		children: [
 			{
 				path: "authenticate",
-				element: <Protected isLoggedIn={true} showIfLoggedIn={false}>
-							<Auth />
-						</Protected>,
+				element: <Protected showIfLoggedIn={false}><Auth /></Protected>,
 				children: [
+					{
+						path: '',
+						element: <Navigate to="sign-up" replace />,
+					},
 					{
 						path: "sign-up",
 						element: <SignUp />,
@@ -36,9 +39,7 @@ const router = createBrowserRouter([
 			},
 			{
 				path: "dashboard",
-				element: <Protected isLoggedIn={true} showIfLoggedIn={true}>
-						<Dashboard isAdmin={false} />
-					</Protected>,
+				element: <Protected showIfLoggedIn={true}><Dashboard/></Protected>,
 			}
 		]
 	},

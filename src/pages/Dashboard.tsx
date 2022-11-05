@@ -1,14 +1,22 @@
 import AdminDashboard from "./AdminDashboard";
 import UserDashboard from "./UserDashboard";
+import { GlobalContext } from "../App";
+import { useContext } from "react";
 
-const Dashboard:React.FC<{isAdmin: boolean}> = ({ isAdmin }) => {
+const Dashboard:React.FC = () => {
     return (
-        <div>
-            {isAdmin} ?
-            <AdminDashboard />
-            :
-            <UserDashboard />
-        </div>
+        <GlobalContext.Consumer>
+            {globalContext => <>
+                {
+                    globalContext?.isAdmin === true &&
+                    <AdminDashboard />
+                }
+                {
+                    globalContext?.isAdmin === false &&
+                    <UserDashboard />
+                }
+            </>}
+        </GlobalContext.Consumer>
     );
 }
  

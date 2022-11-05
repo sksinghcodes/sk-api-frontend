@@ -1,19 +1,28 @@
 import { Navigate } from "react-router-dom";
+import { GlobalContext } from "../App";
 
-const Protected:React.FC<ComponentPropsInterface> = ({isLoggedIn, showIfLoggedIn, children}) => {
-    if(isLoggedIn === showIfLoggedIn){
-        return children;
+const Protected:React.FC<ComponentPropsInterface> = ({showIfLoggedIn, children}) => {
+    const render = (globalContext:any) => {
+        if(globalContext?.isLoggedIn === showIfLoggedIn) {
+            return children
+        }
+        
     }
-
-    if(showIfLoggedIn){
-        return <Navigate to="authenticate/sign-up" replace />;
-    } else {
-        return <Navigate to="/" replace />;
-    }
+    
+    return (
+        <GlobalContext.Consumer>
+            {globalContext => <>
+                {globalContext?.isLoggedIn === showIfLoggedIn 
+                    ? 
+                    children
+                    :
+                    showIfLoggedIn ? <Navigate to="/authenticate/sign-up" replace /> : <Navigate to="/" replace/>}
+            </>}
+        </GlobalContext.Consumer>
+    )
 }
  
 interface ComponentPropsInterface {
-    isLoggedIn:boolean,
     showIfLoggedIn:boolean,
     children:React.ReactElement
 }
