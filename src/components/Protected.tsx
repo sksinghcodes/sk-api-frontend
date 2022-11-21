@@ -6,17 +6,18 @@ const Protected:React.FC<ComponentPropsInterface> = ({showIfLoggedIn, children})
         if(globalContext?.isLoggedIn === showIfLoggedIn) {
             return children
         }
-        
     }
     
     return (
         <GlobalContext.Consumer>
             {globalContext => <>
-                {globalContext?.isLoggedIn === showIfLoggedIn 
-                    ? 
+                {
+                    globalContext?.isLoggedIn === showIfLoggedIn 
+                    ?
                     children
                     :
-                    showIfLoggedIn ? <Navigate to="/authenticate/sign-up" replace /> : <Navigate to="/" replace/>}
+                    (showIfLoggedIn ? <Navigate to="/authenticate/sign-up" replace /> : <Navigate to="/" replace/>)
+                }
             </>}
         </GlobalContext.Consumer>
     )

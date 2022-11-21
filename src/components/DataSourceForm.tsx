@@ -1,63 +1,47 @@
-import React, { useState } from "react";
-import { v4 as uuidv4 } from "uuid";
+import { DataSourceIFLocal } from "../types";
 
-const DataSourceForm = () => {
-    const [headings, setheadings] = useState([{id:uuidv4(), value:''}])
-
-    const handleChangeRowValue = (e:React.ChangeEvent<HTMLInputElement>) => {
-        const { index } = e.currentTarget.dataset;
-        const { value } = e.currentTarget;
-        const headingsCopy = headings.map(heading => ({...heading}))
-
-        headingsCopy[index as unknown as number].value = value;
-        setheadings(headingsCopy)
-    }
-
-    const handleRows = (e:React.SyntheticEvent) => {
-        const { action, index } = (e.currentTarget as HTMLButtonElement).dataset;
-        const numIndex = index as unknown as number;
-        const headingsCopy = headings.map(heading => ({...heading}))
-
-        if(action === 'ADD_ROW') {
-            headingsCopy.splice(numIndex, 0, {id: uuidv4(), value: ''});
-        }
-
-        if(action === 'REMOVE_ROW') {
-            headingsCopy.splice(numIndex, 1);
-        }
-        console.log(JSON.parse(JSON.stringify(headingsCopy)));
-
-        setheadings(headingsCopy)
-    }
-
+const DataSourceForm:React.FC<DataSourceFormPropsInterface> = ({dataSource, handleChange, handleRows, handleSubmit}) => {
     return <>
-        <form onSubmit={e => e.preventDefault()}>
+        <form onSubmit={handleSubmit}>
             
             <div>
                 <label>Source</label>
-                <div><input type="text" /></div>
+                <div><input type="text" data-key="source" value={dataSource.source} onChange={handleChange} /></div>
             </div>
             
             <div>
                 <label>Headings</label>
-                {headings.map((heading, i) => (
+                {dataSource.headings.map((heading, i) => (
                     <div key={heading.id} >
-                        <input type="text" value={heading.value} data-index={i} onChange={handleChangeRowValue}/>
-                        {headings.length > 1 &&
+                        <input
+                            type="text"
+                            data-key="source"
+                            data-index={i}
+                            data-is-item-of-array
+                            value={heading.value}
+                            onChange={handleChange}
+                        />
+                        {dataSource.headings.length > 1 &&
                             <button type="button" data-action="REMOVE_ROW" data-index={i} onClick={handleRows}>-</button>
                         }
                         <button type="button" data-action="ADD_ROW" data-index={i} onClick={handleRows}>+</button>
                     </div>
                 ))}
             </div>
-
-            <div>
-                <label>Generate Key</label>
-                <div><input type="text" /></div>
-            </div>
             
+            <div>
+                <input type="submit" value="Submit" />
+            </div>
+
         </form>
     </>;
 }
- 
+
+interface DataSourceFormPropsInterface {
+    dataSource: DataSourceIFLocal,
+    handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void,
+    handleRows: (e: React.SyntheticEvent) => void,
+    handleSubmit: (e: React.SyntheticEvent) => void,
+}
+
 export default DataSourceForm;

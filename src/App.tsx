@@ -7,13 +7,13 @@ import { GlobalContextInterface } from './types';
 export const GlobalContext = createContext<GlobalContextInterface|null>(null)
 
 function App() {
-	const [isLoggedIn, setLoginStatus] = useState<boolean>(true);
+	const [isLoggedIn, setLoginStatus] = useState<boolean>(false);
 	const [isAdmin, setIsAdmin] = useState<boolean|null>(false);
 
 	return (
 		<GlobalContext.Provider value={{
 			isAdmin: isAdmin,
-			isLoggedIn:isLoggedIn,
+			isLoggedIn: isLoggedIn,
 			setLoginStatus:setLoginStatus,
 			setIsAdmin:setIsAdmin,
 		}}>

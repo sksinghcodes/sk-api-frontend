@@ -1,6 +1,13 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { GlobalContext } from "../App";
+import axios from '../api/axios';
 
 const SignUp = () => {
+    const context = useContext(GlobalContext);
+
+    const navigate = useNavigate();
+
     const [signUpData, setSignUpData] = useState({
         firstName: '',
         lastName: '',
@@ -18,8 +25,22 @@ const SignUp = () => {
         })
     }
 
+    const handleSubmit = (e:React.SyntheticEvent) => {
+        e.preventDefault();
+        axios.post('user/sign-in', signUpData)
+            .then(response => {
+                if(response.data.success){
+                    context?.setLoginStatus(true);
+                    navigate('/');
+                } else {
+                    console.log(response.data.error);
+                }
+            })
+            .catch(err => console.log(err))
+    }
+
     return (
-        <form onSubmit={e => e.preventDefault()}>
+        <form onSubmit={handleSubmit}>
             <div>
                 <input type="text" name="firstName" placeholder="First Name" onChange={handleChange} />
             </div>
