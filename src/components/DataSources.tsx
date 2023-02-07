@@ -1,39 +1,20 @@
-import React, { Fragment, useState } from "react";
+import React, { Fragment, useState, useEffect, useContext } from "react";
 import DataSourceForm from "../components/DataSourceForm";
 import { v4 as uuidv4 } from "uuid";
+import { Link } from 'react-router-dom'
 import { DataSourceIF, DataSourceIFLocal } from "../types";
-import axios from '../api/axios';
+import axios from '../api';
+import { Context } from "../context/ContextProvider";
 
-const UserDashboard = () => {
-    const initialDataSources:DataSourceIF[] = [
-        {
-            id: '1',
-            source: 'https://www.google.com/efwe',
-            key: 'hgushrelfiajmiguhsmeurgh',
-            headings: ['firstName', 'lastName', 'email', 'subject', 'message'],
-        },
-        {
-            id: '2',
-            source: 'https://www.google.com/efwe',
-            key: 'hgushrelfiajmiguhsmeurgh',
-            headings: ['firstName', 'lastName', 'email', 'subject', 'message'],
-        },
-        {
-            id: '3',
-            source: 'https://www.google.com/efwe',
-            key: 'hgushrelfiajmiguhsmeurgh',
-            headings: ['firstName', 'lastName', 'email', 'subject', 'message'],
-        },
-        {
-            id: '4',
-            source: 'https://www.google.com/efwe',
-            key: 'hgushrelfiajmiguhsmeurgh',
-            headings: ['firstName', 'lastName', 'email', 'subject', 'message'],
-        },
-    ]
+const DataSources = () => {
+    const context = useContext(Context);
 
     const getOne = () => {
-        axios.post('/data-source/636d070686f1ac755171961a')
+        // axios.post('/data-source/636d070686f1ac755171961a')
+        //     .then(response => console.log(response))
+        //     .catch(err => console.log(err))
+
+        axios.get('/data/get-all/638b275e027cec2ab6395a60')
             .then(response => console.log(response))
             .catch(err => console.log(err))
     }
@@ -43,7 +24,7 @@ const UserDashboard = () => {
         headings: [{id:uuidv4(), value:''}],
     })
 
-    const [dataSources, setDataSources] = useState<DataSourceIF[]>(initialDataSources);
+    const [dataSources, setDataSources] = useState<DataSourceIF[]>([]);
 
     const [showAddNewForm, setShowAddNewForm] = useState(false)
 
@@ -102,16 +83,33 @@ const UserDashboard = () => {
         // setShowAddNewForm(false);
     }
 
+    useEffect(() => {
+        axios.get('/data-source/get-all/')
+            .then((response:any) => {
+                if(response) {
+                    setDataSources(response.data.dataSources);
+                    console.log(response)
+                } else {
+                    console.log(response.data.error)
+                }
+            })
+            .catch(err => console.log(err))
+
+
+    }, [])
+
     return ( <div>
         <button onClick={getOne}>Get One</button>
         <h1>Data Sources</h1>
         <div style={{border: '1px solid #555'}}>
-            {dataSources.map(dataSource => <Fragment key={dataSource.id}>
+            {dataSources.map(dataSource => <Fragment key={dataSource._id}>
                 <div>
                     <div>{dataSource.source}</div>
-                    <div>{dataSource.key}</div>
+                    <div style={{overflowWrap: 'anywhere'}}>{dataSource.key}</div>
                     <div>{dataSource.headings.join(', ')}</div>
+                    <Link to={`/dashboard/data/${dataSource._id}`}>Show Datasource</Link>
                 </div>
+
                 <hr />
             </Fragment>)}
             {
@@ -131,4 +129,4 @@ const UserDashboard = () => {
     </div> );
 }
  
-export default UserDashboard;
+export default DataSources;

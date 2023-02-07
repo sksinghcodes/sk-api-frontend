@@ -1,8 +1,8 @@
-export interface GlobalContextInterface {
-    isAdmin: boolean | null;
-	isLoggedIn: boolean;
-	setLoginStatus: React.Dispatch<React.SetStateAction<boolean>>;
-	setIsAdmin: React.Dispatch<React.SetStateAction<boolean|null>>;
+export interface ContextInterface {
+	isSignedIn: boolean;
+    isAdmin: boolean;
+	checkSignedInStatus: () => void,
+	deviceHeight: string,
 }
 
 export interface DataSourceIFLocal {
@@ -11,8 +11,27 @@ export interface DataSourceIFLocal {
 }
 
 export interface DataSourceIF {
-	id?: string,
+	_id?: string,
 	key?: string,
 	source: string,
 	headings: string[],
+}
+
+export interface AuthFormSingleFieldIF {
+	value: string,
+	errorMessage: string,
+	touched: boolean,
+	validating?: boolean,
+}
+
+export interface SignUpDataIF {
+	username: AuthFormSingleFieldIF,
+	email: AuthFormSingleFieldIF,
+	password: AuthFormSingleFieldIF,
+	confirmPassword: AuthFormSingleFieldIF,
+}
+
+export interface SignInDataIF {
+	usernameOrEmail: AuthFormSingleFieldIF,
+	password: AuthFormSingleFieldIF,
 }

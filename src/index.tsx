@@ -1,52 +1,16 @@
-import React from 'react';
 import ReactDOM from 'react-dom/client';
-import App from './App';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap-icons/font/bootstrap-icons.css';
 import './index.css';
-import {
-	createBrowserRouter,
-	Navigate,
-	RouterProvider,
-} from "react-router-dom";
-import Auth from './pages/Auth';
-import SignIn from './components/SignIn';
-import SignUp from './components/SignUp';
-import Protected from './components/Protected';
-import Dashboard from './pages/Dashboard';
-
-  
-const router = createBrowserRouter([
-	{
-		path: "/",
-		element: <App />,
-		children: [
-			{
-				path: "authenticate",
-				element: <Protected showIfLoggedIn={false}><Auth /></Protected>,
-				children: [
-					{
-						path: '',
-						element: <Navigate to="sign-up" replace />,
-					},
-					{
-						path: "sign-up",
-						element: <SignUp />,
-					},
-					{
-						path: "sign-in",
-						element: <SignIn />,
-					}
-				]
-			},
-			{
-				path: "dashboard",
-				element: <Protected showIfLoggedIn={true}><Dashboard/></Protected>,
-			}
-		]
-	},
-]);
+import { RouterProvider } from "react-router-dom";
+import ContextProvider from './context/ContextProvider';
+import React from 'react';
+import router from './router/router';
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
 	<React.StrictMode>
-		<RouterProvider router={router} />
+		<ContextProvider>
+			<RouterProvider router={router} />
+		</ContextProvider>
 	</React.StrictMode>
 )

@@ -1,23 +1,13 @@
-import AdminDashboard from "./AdminDashboard";
-import UserDashboard from "./UserDashboard";
-import { GlobalContext } from "../App";
-import { useContext } from "react";
+import NavBar from "../components/NavBar";
+import { Outlet } from "react-router-dom";
 
 const Dashboard:React.FC = () => {
-    return (
-        <GlobalContext.Consumer>
-            {globalContext => <>
-                {
-                    globalContext?.isAdmin === true &&
-                    <AdminDashboard />
-                }
-                {
-                    globalContext?.isAdmin === false &&
-                    <UserDashboard />
-                }
-            </>}
-        </GlobalContext.Consumer>
-    );
+    return <>
+        <NavBar />
+        <div className="container">
+            <Outlet />
+        </div>
+    </>;
 }
  
 export default Dashboard;
