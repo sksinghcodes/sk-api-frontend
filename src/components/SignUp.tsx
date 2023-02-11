@@ -1,57 +1,58 @@
 import { useContext, useEffect, useState } from "react";
 import api from "../api";
-import axios from '../api';
 import { Context } from "../context/ContextProvider";
-import { SignUpDataIF } from "../types";
+import { AvailabilityIF, SignUpDataIF, SignUpValidationIF, ValidationRuleIF, SignUpValidationRulesIF } from "../types";
 import { validationFunctions } from "../utils/validation";
 import ErrorText from "./ErrorText";
 
-
-
-interface ValidationInterface {
-    function: string,
-    args?: any[]
-}
-
-interface ValidationObjInterface {
-    username: ValidationInterface[],
-    email: ValidationInterface[],
-    password: ValidationInterface[],
-    confirmPassword: ValidationInterface[],
-}
-
-
 const SignUp = () => {
-    const context = useContext(Context);
+
+    const context = useContext(Context)
+
     const [ error, setError ] = useState<string>('');
     const [ loading, setLoading ] = useState<boolean>(false);
 
     const [ signUpData, setSignUpData ] = useState<SignUpDataIF>({
+        username: '',
+        email: '',
+        password: '',
+        confirmPassword: '',
+    });
+
+    const [ signUpValidation, setSignUpValidation ] = useState<SignUpValidationIF>({
         username: {
-            value: '',
             errorMessage: '',
             touched: false,
-            validating: false,
+            isValid: false,
         },
         email: {
-            value: '',
             errorMessage: '',
             touched: false,
-            validating: false,
+            isValid: false,
         },
         password: {
-            value: '',
             errorMessage: '',
             touched: false,
+            isValid: false,
         },
         confirmPassword: {
-            value: '',
             errorMessage: '',
             touched: false,
+            isValid: false,
         },
     });
 
-    const validationObj:ValidationObjInterface = {
+    const [ usernameAvailability, setUsernameAvailability ] = useState<AvailabilityIF>({
+        checkingUnique: false,
+        isUnique: null,
+    });
+
+    const [ emailAvailability, setEmailAvailability ] = useState<AvailabilityIF>({
+        checkingUnique: false,
+        isUnique: null,
+    });
+    
+    const validationRules:SignUpValidationRulesIF = {
         username: [
             {function: 'isRequired'},
             {function: 'noSpaces'},
@@ -71,176 +72,174 @@ const SignUp = () => {
         ],
         confirmPassword: [
             {function: 'isRequired'},
-            {function: 'isSameAsPassword', args: [signUpData.password.value]},
+            {function: 'isSameAsPassword', args: [signUpData.password]},
         ],
-    }
-
-    function validate(validationObject:ValidationObjInterface) {
-        const keys = Object.keys(signUpData);
-        keys.forEach(key => {
-            for(let i = 0; i < validationObject[key as keyof ValidationObjInterface].length; i++){
-
-
-                if(signUpData[key as keyof SignUpDataIF].touched) {
-
-                    const validation = validationObject[key as keyof ValidationObjInterface][i];
-
-                    setSignUpData({
-                        ...signUpData,
-                        [key]: {
-                            ...signUpData[key as keyof SignUpDataIF],
-                            validating: true,
-                        }
-                    })
-
-                    const message = validationFunctions[validation.function as string](
-                        signUpData[key as keyof SignUpDataIF].value,
-                        ...(validation.args || [])
-                    )
-
-                    if(message){
-                        setSignUpData({
-                            ...signUpData,
-                            [key]: {
-                                ...signUpData[key as keyof SignUpDataIF],
-                                validating: false,
-                                errorMessage: message
-                            }
-                        })
-                        
-                        return;
-                    } else {
-                        setSignUpData({
-                            ...signUpData,
-                            [key]: {
-                                ...signUpData[key as keyof SignUpDataIF],
-                                validating: false,
-                                errorMessage: message
-                            }
-                        })
-                    }
-                }
-            };
-        });
     }
 
     const handleChange = (e:React.ChangeEvent<HTMLInputElement>) => {
         const {name, value} = e.currentTarget;
-        setSignUpData({
-            ...signUpData,
+        setSignUpValidation({
+            ...signUpValidation,
             [name]: {
-                ...signUpData[name as keyof SignUpDataIF],
-                value: value,
+                ...signUpValidation[name as keyof SignUpValidationIF],
                 touched: true,
             },
+        })
+
+        setSignUpData({
+            ...signUpData,
+            [name]: value
         })
     }
 
     const handleSubmit = (e:React.SyntheticEvent) => {
         e.preventDefault();
-        api.post('user/sign-up', signUpData)
-            .then(response => {
-                if(response.data.success){
-                    context?.checkSignedInStatus()
-                } else {
-                    console.log(response.data.error);
-                }
-            })
-            .catch(err => console.log(err))
+
+        if(
+            signUpValidation.username.isValid &&
+            signUpValidation.email.isValid &&
+            signUpValidation.password.isValid &&
+            signUpValidation.confirmPassword.isValid &&
+            emailAvailability.isUnique &&
+            (!emailAvailability.checkingUnique) &&
+            usernameAvailability.isUnique &&
+            (!usernameAvailability.checkingUnique)
+        ) {
+            setLoading(true);
+            api.post('user/sign-up', signUpData)
+                .then(response => {
+                    setLoading(false);
+                    if(response.data.success){
+                        context?.checkSignedInStatus()
+                    } else {
+                        const keys = Object.keys(validationRules);
+                        let signUpValidationCopy:SignUpValidationIF = {} as SignUpValidationIF;
+                        
+                        keys.forEach(key => {
+                            signUpValidationCopy[key as keyof SignUpValidationIF] = {
+                                ...signUpValidation[key as keyof SignUpValidationIF]
+                            }
+                        });
+
+                        keys.forEach(key => {
+                            signUpValidationCopy[key as keyof SignUpValidationIF] = {
+                                ...signUpValidationCopy[key as keyof SignUpValidationIF],
+                                isValid: response.data.validation[key].isValid,
+                                errorMessage: response.data.validation[key].errorMessage,
+                            }
+                        })
+
+                        setSignUpValidation(signUpValidationCopy);
+
+                        setUsernameAvailability({
+                            ...usernameAvailability,
+                            isUnique: response.data.validation.username.isUnique,
+                        })
+
+                        setEmailAvailability({
+                            ...emailAvailability,
+                            isUnique: response.data.validation.email.isUnique,
+                        })
+                    }
+                })
+                .catch(err => {
+                    setLoading(false);
+                });
+        } else {
+            validate(validationRules, true);
+        }
     }
 
-    useEffect(() => {
-        validate(validationObj);
-    }, [
-        signUpData.username.value,
-        signUpData.email.value,
-        signUpData.password.value,
-        signUpData.confirmPassword.value,
-    ]),
+    const checkUnique = (key:'email' | 'username', availability:AvailabilityIF , setAvailability:React.Dispatch<React.SetStateAction<AvailabilityIF>>) => {
 
-    function checkUnique(key:string, message:string) {
+        if(signUpData[key as keyof SignUpValidationIF].trim()){
+
+            setAvailability({
+                ...availability,
+                checkingUnique: true,
+            })
+
+            const timoutId = setTimeout(() => {
+                api.get(`/user/check-unique`, {
+                    params: {
+                        [key]: signUpData[key as keyof SignUpDataIF],
+                    }
+                })
+                    .then(response => {
+                        if(response.data.success){
+
+                            setAvailability({
+                                isUnique: response.data.isUnique,
+                                checkingUnique: false
+                            })
+                        }
+                    })
+                    .catch(error => {
+                        console.log(error)
+                    })
+            }, 1000);
+
+            return () => {
+                clearTimeout(timoutId);
+            }
+        }
+    }
+
+    const validate = (validationRules:SignUpValidationRulesIF, fromSubmit:boolean = false) => {
+        const keys = Object.keys(validationRules);
+        let signUpValidationCopy:SignUpValidationIF = {} as SignUpValidationIF;
         
+        keys.forEach(key => (
+            signUpValidationCopy[key as keyof SignUpValidationIF] = {
+                ...signUpValidation[key as keyof SignUpValidationIF]
+            }
+        ));
+        
+        for(const [key, validations] of Object.entries(validationRules)){
+
+            if(signUpValidation[key as keyof SignUpValidationIF].touched || fromSubmit) {
+
+                for(const [index, validation] of Object.entries(validations)){
+
+                    const message = validationFunctions[(validation as ValidationRuleIF).function](
+                        signUpData[key as keyof SignUpDataIF],
+                        ...((validation as ValidationRuleIF).args || [])
+                    )
+
+                    if(message){
+                        signUpValidationCopy[key as keyof SignUpValidationIF].errorMessage = message;
+                        signUpValidationCopy[key as keyof SignUpValidationIF].isValid = false;
+                        break;
+                    } else {
+                        if(+index === validations.length - 1){
+                            signUpValidationCopy[key as keyof SignUpValidationIF].isValid = true;
+                        }
+                        signUpValidationCopy[key as keyof SignUpValidationIF].errorMessage = message;
+                    }
+                }
+            }
+        }
+
+        setSignUpValidation(signUpValidationCopy);
     }
 
     useEffect(() => {
-        const { value, touched, errorMessage } = signUpData.username;
-
-        if(value.trim() && touched && !errorMessage){
-
-            setSignUpData({
-                ...signUpData,
-                username: {
-                    ...signUpData.username,
-                    validating: true,
-                }
-            })
-
-            const timeOutId = setTimeout(() => {
-                api.get(`/user/check-unique/username/${signUpData.username.value}`)
-                    .then(response => {
-                        let errorMessage = '';
-                        if(response.data.success && response.data.isUnique){
-                            errorMessage = '';
-                        } else {
-                            errorMessage = 'Username already exists';
-                        }
-                        setSignUpData({
-                            ...signUpData,
-                            username: {
-                                ...signUpData.username,
-                                errorMessage,
-                                validating: false
-                            }
-                        })
-                    })
-                    .catch(error => {
-                        console.log(error)
-                    })
-            }, 1000)
-
-            return () => clearTimeout(timeOutId);
-        }
-    }, [signUpData.username.value])
+        validate(validationRules);
+    }, [
+        signUpData.username,
+        signUpData.email,
+        signUpData.password,
+        signUpData.confirmPassword,
+    ]);
 
     useEffect(() => {
-        const { value, touched, errorMessage } = signUpData.email;
+        return checkUnique('email', emailAvailability, setEmailAvailability);
+    }, [ signUpData.email, signUpValidation.email.isValid ]);
 
-        if(value.trim() && touched && !errorMessage){
 
-            setSignUpData({
-                ...signUpData,
-                email: {
-                    ...signUpData.email,
-                    validating: true,
-                }
-            })
-
-            const timeOutId = setTimeout(() => {
-                api.get(`/user/check-unique/email/${signUpData.email.value}`)
-                    .then(response => {
-                        let errorMessage = '';
-                        if(response.data.success && response.data.isUnique){
-                            errorMessage = '';
-                        } else {
-                            errorMessage = 'Username already exists';
-                        }
-                        setSignUpData({
-                            ...signUpData,
-                            email: {
-                                ...signUpData.email,
-                                errorMessage,
-                                validating: false,
-                            }
-                        })
-                    })
-                    .catch(error => {
-                        console.log(error)
-                    })
-            }, 1000)
-
-            return () => clearTimeout(timeOutId);
-        }
-    }, [signUpData.email.value])
+    useEffect(() => {
+        return checkUnique('username', usernameAvailability, setUsernameAvailability);
+    }, [ signUpData.username, signUpValidation.email.isValid ]);
 
     return (
         <form onSubmit={handleSubmit}>
@@ -250,22 +249,26 @@ const SignUp = () => {
                     <p className="form-label text-white fw-semibold">Choose a Username</p>
                     <input
                         className="form-control"
+                        autoComplete="username"
                         type="text"
                         name="username"
                         placeholder="Username"
-                        value={signUpData.username.value}
+                        value={signUpData.username}
                         onChange={handleChange}
                     />
                 </label>
-                {signUpData.username.validating && 
+                {usernameAvailability.checkingUnique && signUpValidation.username.isValid && 
                     <div className="text-end">
                         <div className="text-white spinner-border spinner-border-sm" role="status">
                             <span className="visually-hidden">Loading...</span>
                         </div>
                     </div>
                 }
-                {signUpData.username.errorMessage &&
-                    <ErrorText>{signUpData.username.errorMessage}</ErrorText>
+                {signUpValidation.username.errorMessage &&
+                    <ErrorText>{signUpValidation.username.errorMessage}</ErrorText>
+                }
+                {usernameAvailability.isUnique === false && signUpValidation.username.isValid &&
+                    <ErrorText>username is already taken</ErrorText>
                 }
             </div>
             
@@ -274,22 +277,26 @@ const SignUp = () => {
                     <p className="form-label text-white fw-semibold">Email Address</p>
                     <input
                         className="form-control"
+                        autoComplete="email"
                         type="email"
                         name="email"
                         placeholder="Email Address"
-                        value={signUpData.email.value}
+                        value={signUpData.email}
                         onChange={handleChange}
                     />
                 </label>
-                {signUpData.email.validating &&
+                {emailAvailability.checkingUnique && signUpValidation.email.isValid &&
                     <div className="text-end">
                         <div className="text-white spinner-border spinner-border-sm" role="status">
                             <span className="visually-hidden">Loading...</span>
                         </div>
                     </div>
                 }
-                {signUpData.email.errorMessage &&
-                    <ErrorText>{signUpData.email.errorMessage}</ErrorText>
+                {signUpValidation.email.errorMessage &&
+                    <ErrorText>{signUpValidation.email.errorMessage}</ErrorText>
+                }
+                {emailAvailability.isUnique === false && signUpValidation.email.isValid &&
+                    <ErrorText>Email already exists in an account</ErrorText>
                 }
             </div>
             
@@ -298,15 +305,16 @@ const SignUp = () => {
                     <p className="form-label text-white fw-semibold">Password</p>
                     <input
                         className="form-control"
-                        type="passowrd"
+                        autoComplete="password"
+                        type="password"
                         name="password"
                         placeholder="Password"
-                        value={signUpData.password.value}
+                        value={signUpData.password}
                         onChange={handleChange}
                     />
                 </label>
-                {signUpData.password.errorMessage &&
-                    <ErrorText>{signUpData.password.errorMessage}</ErrorText>
+                {signUpValidation.password.errorMessage &&
+                    <ErrorText>{signUpValidation.password.errorMessage}</ErrorText>
                 }
             </div>
             
@@ -315,25 +323,43 @@ const SignUp = () => {
                     <p className="form-label text-white fw-semibold">Confirm Password</p>
                     <input
                         className="form-control"
-                        type="passowrd"
+                        autoComplete="password"
+                        type="password"
                         name="confirmPassword"
                         placeholder="Confirm Password"
-                        value={signUpData.confirmPassword.value}
+                        value={signUpData.confirmPassword}
                         onChange={handleChange}
                     />
                 </label>
                 {
-                    signUpData.confirmPassword.errorMessage &&
-                    <ErrorText>{signUpData.confirmPassword.errorMessage}</ErrorText>
+                    signUpValidation.confirmPassword.errorMessage &&
+                    <ErrorText>{signUpValidation.confirmPassword.errorMessage}</ErrorText>
                 }
             </div>
 
             <div className="text-center">
-                <input
-                    className="btn btn-outline-light"
-                    type="submit"
-                    value="Sign Up"
-                />
+                <button
+                    className="btn btn-primary border-white position-relative ps-5 pe-5 "
+                >
+                    Sign Up
+                    {loading &&
+                        <div
+                            style={{
+                                top: '50%',
+                                right: 25,
+                                transform: 'translateY(-50%)',
+                                position: 'absolute',
+                            }}
+                        >
+                            <div
+                                className="text-white spinner-border spinner-border-sm"
+                                role="status"
+                            >
+                                <span className="visually-hidden">Loading...</span>
+                            </div>
+                        </div>
+                    }
+                </button>
             </div>
         </form>
     );

@@ -8,9 +8,9 @@ import React from 'react';
 import router from './router/router';
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
-	<React.StrictMode>
+	// <React.StrictMode>
 		<ContextProvider>
 			<RouterProvider router={router} />
 		</ContextProvider>
-	</React.StrictMode>
+	// </React.StrictMode>
 )

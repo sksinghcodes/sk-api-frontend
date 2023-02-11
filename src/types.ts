@@ -17,21 +17,54 @@ export interface DataSourceIF {
 	headings: string[],
 }
 
-export interface AuthFormSingleFieldIF {
-	value: string,
+export interface ValidationIF {
 	errorMessage: string,
 	touched: boolean,
-	validating?: boolean,
+	isValid: boolean,
 }
 
 export interface SignUpDataIF {
-	username: AuthFormSingleFieldIF,
-	email: AuthFormSingleFieldIF,
-	password: AuthFormSingleFieldIF,
-	confirmPassword: AuthFormSingleFieldIF,
+	username: string,
+	email: string,
+	password: string,
+	confirmPassword: string,
 }
 
 export interface SignInDataIF {
-	usernameOrEmail: AuthFormSingleFieldIF,
-	password: AuthFormSingleFieldIF,
+	usernameOrEmail: string,
+	password: string,
+}
+
+export interface SignUpValidationIF {
+	username: ValidationIF,
+	email: ValidationIF,
+	password: ValidationIF,
+	confirmPassword: ValidationIF,
+}
+
+export interface SignInValidationIF {
+	usernameOrEmail: ValidationIF,
+	password: ValidationIF,
+}
+
+export interface AvailabilityIF {
+	checkingUnique: boolean,
+	isUnique: boolean | null,
+}
+
+export interface ValidationRuleIF {
+    function: string,
+    args?: any[]
+}
+
+export interface SignUpValidationRulesIF {
+    username: ValidationRuleIF[],
+    email: ValidationRuleIF[],
+    password: ValidationRuleIF[],
+    confirmPassword: ValidationRuleIF[],
+}
+
+export interface SignInValidationRulesIF {
+    usernameOrEmail: ValidationRuleIF[],
+    password: ValidationRuleIF[],
 }

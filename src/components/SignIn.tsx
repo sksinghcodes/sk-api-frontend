@@ -1,9 +1,10 @@
 import { useState, useContext, useEffect } from "react";
 import { Context } from "../context/ContextProvider";
 import api from "../api";
-import { SignInDataIF } from "../types";
+import { SignInDataIF, SignInValidationIF, SignInValidationRulesIF, ValidationRuleIF } from "../types";
 import ErrorText from "./ErrorText";
 import { validate } from "uuid";
+import { validationFunctions } from "../utils/validation";
 
 const SignIn = () => {
     const context = useContext(Context);
@@ -12,20 +13,42 @@ const SignIn = () => {
     const [ loading, setLoading ] = useState<boolean>(false);
 
     const [ signInData, setSignInData ] = useState<SignInDataIF>({
+        usernameOrEmail: '',
+        password: '',
+    });
+
+    const [ signInValidation, setSignInValidation ] = useState<SignInValidationIF>({
         usernameOrEmail: {
-            value: '',
             errorMessage: '',
             touched: false,
+            isValid: false,
         },
         password: {
-            value: '',
             errorMessage: '',
             touched: false,
+            isValid: false,
         },
     });
 
+    const validationRules:SignInValidationRulesIF = {
+        usernameOrEmail: [
+            {function: 'isRequired'},
+        ],
+        password: [
+            {function: 'isRequired'},
+        ],
+    }
+
     const handleChange = (e:React.ChangeEvent<HTMLInputElement>) => {
         const {name, value} = e.currentTarget;
+        setSignInValidation({
+            ...signInValidation,
+            [name]: {
+                ...signInValidation[name as keyof SignInValidationIF],
+                touched: true,
+            },
+        })
+
         setSignInData({
             ...signInData,
             [name]: value,
@@ -35,16 +58,79 @@ const SignIn = () => {
     const handleSubmit = (e:React.SyntheticEvent) => {
         e.preventDefault();
 
-        api.post('user/sign-in', signInData)
-            .then(response => {
-                if(response.data.success){
-                    context?.checkSignedInStatus()
-                } else {
-                    console.log(response.data.error);
-                }
-            })
-            .catch(err => console.log(err))
+        if(
+            signInValidation.usernameOrEmail.isValid &&
+            signInValidation.password.isValid
+        ) {
+            api.post('user/sign-in', signInData)
+                .then(response => {
+                    if(response.data.success){
+                        context?.checkSignedInStatus()
+                    } else {
+                        setSignInValidation({
+                            usernameOrEmail: {
+                                ...signInValidation.usernameOrEmail,
+                                errorMessage: signInValidation.usernameOrEmail.errorMessage,
+                                isValid: signInValidation.usernameOrEmail.isValid,
+                            },
+                            password: {
+                                ...signInValidation.usernameOrEmail,
+                                errorMessage: signInValidation.usernameOrEmail.errorMessage,
+                                isValid: signInValidation.usernameOrEmail.isValid,
+                            }
+                        })
+                    }
+                })
+                .catch(err => console.log(err))
+        } else {
+            validate(validationRules, true);
+        }
     }
+
+    const validate = (validationRules:SignInValidationRulesIF, fromSubmit:boolean = false) => {
+        const keys = Object.keys(validationRules);
+        let signInValidationCopy:SignInValidationIF = {} as SignInValidationIF;
+        
+        keys.forEach(key => (
+            signInValidationCopy[key as keyof SignInValidationIF] = {
+                ...signInValidation[key as keyof SignInValidationIF]
+            }
+        ));
+        
+        for(const [key, validations] of Object.entries(validationRules)){
+
+            if(signInValidation[key as keyof SignInValidationIF].touched || fromSubmit) {
+
+                for(const [index, validation] of Object.entries(validations)){
+
+                    const message = validationFunctions[(validation as ValidationRuleIF).function](
+                        signInData[key as keyof SignInDataIF],
+                        ...((validation as ValidationRuleIF).args || [])
+                    )
+
+                    if(message){
+                        signInValidationCopy[key as keyof SignInValidationIF].errorMessage = message;
+                        signInValidationCopy[key as keyof SignInValidationIF].isValid = false;
+                        break;
+                    } else {
+                        if(+index === validations.length - 1){
+                            signInValidationCopy[key as keyof SignInValidationIF].isValid = true;
+                        }
+                        signInValidationCopy[key as keyof SignInValidationIF].errorMessage = message;
+                    }
+                }
+            }
+        }
+
+        setSignInValidation(signInValidationCopy);
+    }
+
+    useEffect(() => {
+        validate(validationRules);
+    }, [
+        signInData.usernameOrEmail,
+        signInData.password,
+    ]);
     
     return (
         <form onSubmit={handleSubmit}>
@@ -60,6 +146,9 @@ const SignIn = () => {
                         autoComplete="username"
                     />
                 </label>
+                {signInValidation.usernameOrEmail.errorMessage &&
+                    <ErrorText>{signInValidation.usernameOrEmail.errorMessage}</ErrorText>
+                }
             </div>
             <div className="mb-4">
                 <label className="w-100">
@@ -84,6 +173,9 @@ const SignIn = () => {
                         </button>
                     </div>
                 </label>
+                {signInValidation.password.errorMessage &&
+                    <ErrorText>{signInValidation.password.errorMessage}</ErrorText>
+                }
             </div>
             <div className="text-center">
                 <input
