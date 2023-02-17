@@ -107,11 +107,14 @@ const SignUp = () => {
         ) {
             setLoading(true);
             api.post('user/sign-up', signUpData)
-                .then(response => {
+                .then(({data}) => {
                     setLoading(false);
-                    if(response.data.success){
+
+                    if(data.success){
                         context?.checkSignedInStatus()
-                    } else {
+                    }
+                    
+                    if(!data.success && data.validation) {
                         const keys = Object.keys(validationRules);
                         let signUpValidationCopy:SignUpValidationIF = {} as SignUpValidationIF;
                         
@@ -124,8 +127,8 @@ const SignUp = () => {
                         keys.forEach(key => {
                             signUpValidationCopy[key as keyof SignUpValidationIF] = {
                                 ...signUpValidationCopy[key as keyof SignUpValidationIF],
-                                isValid: response.data.validation[key].isValid,
-                                errorMessage: response.data.validation[key].errorMessage,
+                                isValid: data.validation[key].isValid,
+                                errorMessage: data.validation[key].errorMessage,
                             }
                         })
 
@@ -133,13 +136,17 @@ const SignUp = () => {
 
                         setUsernameAvailability({
                             ...usernameAvailability,
-                            isUnique: response.data.validation.username.isUnique,
+                            isUnique: data.validation.username.isUnique,
                         })
 
                         setEmailAvailability({
                             ...emailAvailability,
-                            isUnique: response.data.validation.email.isUnique,
+                            isUnique: data.validation.email.isUnique,
                         })
+                    }
+                    
+                    if(!data.success && data.error){
+                        setError(data.error);
                     }
                 })
                 .catch(err => {
@@ -361,6 +368,10 @@ const SignUp = () => {
                     }
                 </button>
             </div>
+            {error && <>
+                <div className="pb-3"></div>
+                <ErrorText>{error}</ErrorText>
+            </>}
         </form>
     );
 }

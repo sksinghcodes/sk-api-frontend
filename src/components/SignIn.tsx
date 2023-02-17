@@ -62,26 +62,40 @@ const SignIn = () => {
             signInValidation.usernameOrEmail.isValid &&
             signInValidation.password.isValid
         ) {
+            setLoading(true);
             api.post('user/sign-in', signInData)
-                .then(response => {
-                    if(response.data.success){
+                .then(({data}) => {
+                    console.log(data)
+
+                    setLoading(false);
+
+                    if(data.success){
                         context?.checkSignedInStatus()
-                    } else {
+                    }
+                    
+                    if(!data.success && data.validation){
                         setSignInValidation({
                             usernameOrEmail: {
                                 ...signInValidation.usernameOrEmail,
-                                errorMessage: signInValidation.usernameOrEmail.errorMessage,
-                                isValid: signInValidation.usernameOrEmail.isValid,
+                                errorMessage: data.validation.usernameOrEmail.errorMessage,
+                                isValid: data.validation.usernameOrEmail.isValid,
                             },
                             password: {
                                 ...signInValidation.usernameOrEmail,
-                                errorMessage: signInValidation.usernameOrEmail.errorMessage,
-                                isValid: signInValidation.usernameOrEmail.isValid,
+                                errorMessage: data.validation.usernameOrEmail.errorMessage,
+                                isValid: data.validation.usernameOrEmail.isValid,
                             }
                         })
                     }
+
+                    if(!data.success && data.error){
+                        setError(data.error)
+                    }
                 })
-                .catch(err => console.log(err))
+                .catch(err => {
+                    setLoading(false);
+                    console.log(err)
+                })
         } else {
             validate(validationRules, true);
         }
@@ -178,12 +192,33 @@ const SignIn = () => {
                 }
             </div>
             <div className="text-center">
-                <input
-                    className="btn btn-outline-light"
-                    type="submit"
-                    value="Sign In"
-                />
+            <button
+                    className="btn btn-primary border-white position-relative ps-5 pe-5 "
+                >
+                    Sign In
+                    {loading &&
+                        <div
+                            style={{
+                                top: '50%',
+                                right: 25,
+                                transform: 'translateY(-50%)',
+                                position: 'absolute',
+                            }}
+                        >
+                            <div
+                                className="text-white spinner-border spinner-border-sm"
+                                role="status"
+                            >
+                                <span className="visually-hidden">Loading...</span>
+                            </div>
+                        </div>
+                    }
+                </button>
             </div>
+            {error && <>
+                <div className="pb-3"></div>
+                <ErrorText>{error}</ErrorText>
+            </>}
         </form>
     );
 }
