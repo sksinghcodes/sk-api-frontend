@@ -35,6 +35,12 @@ export interface SignInDataIF {
 	password: string,
 }
 
+export interface ResetPasswordDataIF {
+	code: string,
+	newPassword: string,
+	confirmNewPassword: string,
+}
+
 export interface SignUpValidationIF {
 	username: ValidationIF,
 	email: ValidationIF,
@@ -45,6 +51,12 @@ export interface SignUpValidationIF {
 export interface SignInValidationIF {
 	usernameOrEmail: ValidationIF,
 	password: ValidationIF,
+}
+
+export interface ResetPasswordValidationIF {
+	code: ValidationIF,
+	newPassword: ValidationIF,
+	confirmNewPassword: ValidationIF,
 }
 
 export interface AvailabilityIF {
@@ -67,4 +79,10 @@ export interface SignUpValidationRulesIF {
 export interface SignInValidationRulesIF {
     usernameOrEmail: ValidationRuleIF[],
     password: ValidationRuleIF[],
+}
+
+export interface ResetPasswordValidationRulesIF {
+	code: ValidationRuleIF[],
+	newPassword: ValidationRuleIF[],
+	confirmNewPassword: ValidationRuleIF[],
 }

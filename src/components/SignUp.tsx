@@ -1,4 +1,5 @@
 import { useContext, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import api from "../api";
 import { Context } from "../context/ContextProvider";
 import { AvailabilityIF, SignUpDataIF, SignUpValidationIF, ValidationRuleIF, SignUpValidationRulesIF } from "../types";
@@ -8,6 +9,8 @@ import ErrorText from "./ErrorText";
 const SignUp = () => {
 
     const context = useContext(Context)
+
+    const navigate = useNavigate();
 
     const [ error, setError ] = useState<string>('');
     const [ loading, setLoading ] = useState<boolean>(false);
@@ -106,12 +109,12 @@ const SignUp = () => {
             (!usernameAvailability.checkingUnique)
         ) {
             setLoading(true);
-            api.post('user/sign-up', signUpData)
+            api.post('/user/sign-up', signUpData)
                 .then(({data}) => {
                     setLoading(false);
 
                     if(data.success){
-                        context?.checkSignedInStatus()
+                        navigate('/authentication/verify-profile', {state: data.confirmationCodeId})
                     }
                     
                     if(!data.success && data.validation) {
@@ -149,7 +152,8 @@ const SignUp = () => {
                         setError(data.error);
                     }
                 })
-                .catch(err => {
+                .catch(error => {
+                    setError(error.message);
                     setLoading(false);
                 });
         } else {
@@ -182,6 +186,7 @@ const SignUp = () => {
                         }
                     })
                     .catch(error => {
+                        setError(error.message)
                         console.log(error)
                     })
             }, 1000);

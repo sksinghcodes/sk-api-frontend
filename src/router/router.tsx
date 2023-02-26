@@ -1,5 +1,6 @@
 import { createBrowserRouter, Navigate } from "react-router-dom";
 import App from '../App';
+import VerifyProfile from "../components/VerifyProfile";
 import Datas from "../components/Datas";
 import DataSources from "../components/DataSources";
 import SignIn from "../components/SignIn";
@@ -7,6 +8,7 @@ import SignUp from "../components/SignUp";
 import Authentication from "../pages/Authentication";
 import Dashboard from "../pages/Dashboard";
 import RenderIf from "../private/RenderIf";
+import ResetPassword from "../components/ResetPassword";
 
 const router = createBrowserRouter([
 	{
@@ -19,7 +21,7 @@ const router = createBrowserRouter([
 				children: [
 					{
 						path: '',
-						element: <Navigate to='sign-up' replace />,
+						element: <Navigate to='sign-in' replace />,
 					},
 					{
 						path: 'sign-up',
@@ -28,6 +30,14 @@ const router = createBrowserRouter([
 					{
 						path: 'sign-in',
 						element: <SignIn />,
+					},
+					{
+						path: 'verify-profile',
+						element: <VerifyProfile />,
+					},
+					{
+						path: 'reset-password',
+						element: <ResetPassword />,
 					}
 				]
 			},

@@ -3,11 +3,12 @@ import { Context } from "../context/ContextProvider";
 import api from "../api";
 import { SignInDataIF, SignInValidationIF, SignInValidationRulesIF, ValidationRuleIF } from "../types";
 import ErrorText from "./ErrorText";
-import { validate } from "uuid";
 import { validationFunctions } from "../utils/validation";
+import { Link, useNavigate } from "react-router-dom";
 
 const SignIn = () => {
     const context = useContext(Context);
+    const navigate = useNavigate();
     const [ showPassword, setShowPassword ] = useState<boolean>(false);
     const [ error, setError ] = useState<string>('');
     const [ loading, setLoading ] = useState<boolean>(false);
@@ -63,14 +64,17 @@ const SignIn = () => {
             signInValidation.password.isValid
         ) {
             setLoading(true);
-            api.post('user/sign-in', signInData)
+            api.post('/user/sign-in', signInData)
                 .then(({data}) => {
-                    console.log(data)
 
                     setLoading(false);
 
                     if(data.success){
-                        context?.checkSignedInStatus()
+                        if(data.confirmationCodeId){
+                            navigate('/authentication/verify-profile', {state: data.confirmationCodeId});
+                        } else {
+                            context?.checkSignedInStatus()
+                        }
                     }
                     
                     if(!data.success && data.validation){
@@ -94,7 +98,7 @@ const SignIn = () => {
                 })
                 .catch(err => {
                     setLoading(false);
-                    console.log(err)
+                    setError(err.message)
                 })
         } else {
             validate(validationRules, true);
@@ -156,6 +160,7 @@ const SignIn = () => {
                         type="text"
                         name="usernameOrEmail"
                         placeholder="Username or Email Address"
+                        value={signInData.usernameOrEmail}
                         onChange={handleChange}
                         autoComplete="username"
                     />
@@ -173,6 +178,7 @@ const SignIn = () => {
                             type={showPassword ? 'text' : 'password'}
                             name="password"
                             placeholder="Password"
+                            value={signInData.password}
                             onChange={handleChange}
                             autoComplete="current-password"
                         />
@@ -192,7 +198,7 @@ const SignIn = () => {
                 }
             </div>
             <div className="text-center">
-            <button
+                <button
                     className="btn btn-primary border-white position-relative ps-5 pe-5 "
                 >
                     Sign In
@@ -215,10 +221,13 @@ const SignIn = () => {
                     }
                 </button>
             </div>
+            
             {error && <>
                 <div className="pb-3"></div>
                 <ErrorText>{error}</ErrorText>
             </>}
+
+            <div className="text-white mt-3"><Link className="text-white" to="/authentication/reset-password">Click here</Link> if you have forgotten your password</div>
         </form>
     );
 }
