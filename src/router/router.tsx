@@ -1,14 +1,18 @@
 import { createBrowserRouter, Navigate } from "react-router-dom";
 import App from '../App';
-import VerifyProfile from "../components/VerifyProfile";
-import Datas from "../components/Datas";
-import DataSources from "../components/DataSources";
-import SignIn from "../components/SignIn";
-import SignUp from "../components/SignUp";
+
+import VerifyProfile from "../components/authentication/VerifyProfile";
+import ResetPassword from "../components/authentication/ResetPassword";
+import SignIn from "../components/authentication/SignIn";
+import SignUp from "../components/authentication/SignUp";
+
+import Datas from "../components/dashboard/Datas";
+import DataSources from "../components/dashboard/DataSources";
+
 import Authentication from "../pages/Authentication";
 import Dashboard from "../pages/Dashboard";
 import RenderIf from "../private/RenderIf";
-import ResetPassword from "../components/ResetPassword";
+
 
 const router = createBrowserRouter([
 	{

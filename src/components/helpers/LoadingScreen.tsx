@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { Context } from "../context/ContextProvider";
+import { Context } from "../../context/ContextProvider";
 
 const LoadingScreen = () => {
     const context = useContext(Context)

@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { Link, Navigate, useLocation } from "react-router-dom";
-import api from "../api";
-import ErrorText from "./ErrorText";
-import SuccessText from "./SucessText";
+import api from "../../api";
+import ErrorText from "../helpers/ErrorText";
+import SpinnerButton from "../helpers/SpinnerButton";
+import SuccessText from "../helpers/SucessText";
 
 const VerifyProfile = () => {
     const [ code, setCode ] = useState('');
@@ -67,28 +68,10 @@ const VerifyProfile = () => {
                 </label>
             </div>
             <div className="text-center">
-                <button
-                    className="btn btn-primary border-white position-relative ps-5 pe-5"
-                >
-                    Verify
-                    {loading &&
-                        <div
-                            style={{
-                                top: '50%',
-                                right: 25,
-                                transform: 'translateY(-50%)',
-                                position: 'absolute',
-                            }}
-                        >
-                            <div
-                                className="text-white spinner-border spinner-border-sm"
-                                role="status"
-                            >
-                                <span className="visually-hidden">Loading...</span>
-                            </div>
-                        </div>
-                    }
-                </button>
+                <SpinnerButton
+                    disabled={loading}
+                    loading={loading}
+                >Verify</SpinnerButton>
             </div>
             {error && <>
                 <div className="pb-3"></div>

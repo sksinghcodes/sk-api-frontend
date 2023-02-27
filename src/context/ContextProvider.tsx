@@ -1,6 +1,6 @@
 import React, { createContext, useEffect, useState } from "react";
 import api from "../api";
-import LoadingScreen from "../components/LoadingScreen";
+import LoadingScreen from "../components/helpers/LoadingScreen";
 import { ContextInterface } from "../types";
 
 export const Context = createContext<ContextInterface>({} as ContextInterface)

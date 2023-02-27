@@ -1,10 +1,11 @@
 import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import api from "../api";
-import { Context } from "../context/ContextProvider";
-import { AvailabilityIF, SignUpDataIF, SignUpValidationIF, ValidationRuleIF, SignUpValidationRulesIF } from "../types";
-import { validationFunctions } from "../utils/validation";
-import ErrorText from "./ErrorText";
+import api from "../../api";
+import { Context } from "../../context/ContextProvider";
+import { AvailabilityIF, SignUpDataIF, SignUpValidationIF, ValidationRuleIF, SignUpValidationRulesIF } from "../../types";
+import { validationFunctions } from "../../utils/validation";
+import ErrorText from "../helpers/ErrorText";
+import SpinnerButton from "../helpers/SpinnerButton";
 
 const SignUp = () => {
 
@@ -350,28 +351,10 @@ const SignUp = () => {
             </div>
 
             <div className="text-center">
-                <button
-                    className="btn btn-primary border-white position-relative ps-5 pe-5 "
-                >
-                    Sign Up
-                    {loading &&
-                        <div
-                            style={{
-                                top: '50%',
-                                right: 25,
-                                transform: 'translateY(-50%)',
-                                position: 'absolute',
-                            }}
-                        >
-                            <div
-                                className="text-white spinner-border spinner-border-sm"
-                                role="status"
-                            >
-                                <span className="visually-hidden">Loading...</span>
-                            </div>
-                        </div>
-                    }
-                </button>
+                <SpinnerButton
+                    disabled={loading}
+                    loading={loading}
+                >Sign Up</SpinnerButton>
             </div>
             {error && <>
                 <div className="pb-3"></div>

@@ -86,3 +86,8 @@ export interface ResetPasswordValidationRulesIF {
 	newPassword: ValidationRuleIF[],
 	confirmNewPassword: ValidationRuleIF[],
 }
+
+export interface DataSourceFormErrors {
+	source: string,
+    headings: string[],
+}

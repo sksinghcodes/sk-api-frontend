@@ -1,7 +1,5 @@
-import { useContext } from 'react';
 import { Link, NavLink } from 'react-router-dom';
-import { Context } from '../context/ContextProvider';
-import SignOut from './SignOut';
+import SignOut from '../authentication/SignOut';
 
 const NavBar = () => {
     return ( 

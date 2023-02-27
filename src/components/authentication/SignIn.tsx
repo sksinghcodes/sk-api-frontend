@@ -1,10 +1,11 @@
 import { useState, useContext, useEffect } from "react";
-import { Context } from "../context/ContextProvider";
-import api from "../api";
-import { SignInDataIF, SignInValidationIF, SignInValidationRulesIF, ValidationRuleIF } from "../types";
-import ErrorText from "./ErrorText";
-import { validationFunctions } from "../utils/validation";
+import { Context } from "../../context/ContextProvider";
+import api from "../../api";
+import { SignInDataIF, SignInValidationIF, SignInValidationRulesIF, ValidationRuleIF } from "../../types";
+import ErrorText from "../helpers/ErrorText";
+import { validationFunctions } from "../../utils/validation";
 import { Link, useNavigate } from "react-router-dom";
+import SpinnerButton from "../helpers/SpinnerButton";
 
 const SignIn = () => {
     const context = useContext(Context);
@@ -198,28 +199,10 @@ const SignIn = () => {
                 }
             </div>
             <div className="text-center">
-                <button
-                    className="btn btn-primary border-white position-relative ps-5 pe-5 "
-                >
-                    Sign In
-                    {loading &&
-                        <div
-                            style={{
-                                top: '50%',
-                                right: 25,
-                                transform: 'translateY(-50%)',
-                                position: 'absolute',
-                            }}
-                        >
-                            <div
-                                className="text-white spinner-border spinner-border-sm"
-                                role="status"
-                            >
-                                <span className="visually-hidden">Loading...</span>
-                            </div>
-                        </div>
-                    }
-                </button>
+                <SpinnerButton
+                    disabled={loading}
+                    loading={loading}
+                >Sign In</SpinnerButton>
             </div>
             
             {error && <>

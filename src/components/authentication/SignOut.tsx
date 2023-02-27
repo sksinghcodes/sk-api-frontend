@@ -1,6 +1,6 @@
 import { useContext, useState } from "react";
-import api from "../api";
-import { Context } from "../context/ContextProvider";
+import api from "../../api";
+import { Context } from "../../context/ContextProvider";
 
 const SignOut:React.FC<any> = (props) => {
     const [ loading, setLoading ] = useState<boolean>(false);
