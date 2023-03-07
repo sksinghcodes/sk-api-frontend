@@ -5,7 +5,7 @@ export interface ContextInterface {
 	deviceHeight: string,
 }
 
-export interface DataSourceIFLocal {
+export interface DataSourceLocalIF {
 	source: string,
 	headings: {id:string, value:string}[],
 }
@@ -90,4 +90,9 @@ export interface ResetPasswordValidationRulesIF {
 export interface DataSourceFormErrors {
 	source: string,
     headings: string[],
+}
+
+export enum FormMode {
+	UPDATE,
+	CREATE,
 }

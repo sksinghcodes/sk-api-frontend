@@ -6,8 +6,7 @@ import ResetPassword from "../components/authentication/ResetPassword";
 import SignIn from "../components/authentication/SignIn";
 import SignUp from "../components/authentication/SignUp";
 
-import Datas from "../components/dashboard/Datas";
-import DataSources from "../components/dashboard/DataSources";
+import DataWrapper from "../components/dashboard/DataWrapper";
 
 import Authentication from "../pages/Authentication";
 import Dashboard from "../pages/Dashboard";
@@ -55,11 +54,15 @@ const router = createBrowserRouter([
 					},
 					{
 						path: 'data-sources',
-						element: <DataSources />,
+						element: <DataWrapper />,
+					},
+					{
+						path: 'data',
+						element: <DataWrapper />,
 					},
 					{
 						path: 'data/:dataSourceId',
-						element: <Datas />,
+						element: <DataWrapper />,
 					},
 				],
 			},

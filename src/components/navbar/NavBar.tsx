@@ -13,6 +13,7 @@ const NavBar = () => {
                     <ul className="navbar-nav me-auto">
 
                         <li className='nav-item'><NavLink className="nav-link" to="/data-sources">Data Sourses</NavLink></li>
+                        <li className='nav-item'><NavLink className="nav-link" to="/data">Data</NavLink></li>
 
                     </ul>
                     
