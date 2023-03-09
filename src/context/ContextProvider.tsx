@@ -1,7 +1,7 @@
 import React, { createContext, useEffect, useState } from "react";
 import api from "../api";
 import LoadingScreen from "../components/helpers/LoadingScreen";
-import { ContextInterface } from "../types";
+import { ContextInterface, UserIF } from "../types";
 
 export const Context = createContext<ContextInterface>({} as ContextInterface)
 
@@ -10,6 +10,7 @@ const ContextProvider:React.FC<{children:JSX.Element}> = ({children}) => {
     const [ loading, setLoading ] = useState<boolean>(false);
     const [ isAdmin, setIsAdmin ] = useState<boolean>(false);
     const [ deviceHeight, setDeviceHeight ] = useState<string>(`${window.visualViewport?.height}px`);
+    const [ user, setUser ] = useState<UserIF>({} as UserIF);
 
     useEffect(() => {
         window.visualViewport?.addEventListener('scroll', () => setDeviceHeight(`${window.visualViewport?.height}px`));
@@ -24,8 +25,11 @@ const ContextProvider:React.FC<{children:JSX.Element}> = ({children}) => {
                 setLoading(false);
 				if(response.data.success){
 					setIsAdmin(response.data.user.role === 0);
+					setUser(response.data.user);
 					setIsSignedIn(true)
 				} else {
+                    setIsAdmin(false);
+					setUser({} as UserIF);
 					setIsSignedIn(false)
 				}
 			})
@@ -44,6 +48,7 @@ const ContextProvider:React.FC<{children:JSX.Element}> = ({children}) => {
                 isAdmin: isAdmin,
                 checkSignedInStatus: checkSignedInStatus,
                 deviceHeight: deviceHeight,
+                user: user,
             }}
         > 
             {

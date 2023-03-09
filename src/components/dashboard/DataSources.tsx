@@ -1,16 +1,12 @@
 import React, { useState, useEffect } from "react";
 import DataSourceForm from "./DataSourceForm";
 import { v4 as uuidv4 } from "uuid";
-import { Link } from 'react-router-dom'
+import { Link, useOutletContext } from 'react-router-dom'
 import { DataSourceFormErrors, DataSourceIF, DataSourceLocalIF, FormMode } from "../../types";
 import { Modal, Tooltip } from 'bootstrap';
 import api from "../../api";
 
-const DataSources:React.FC<DataSourcesPropsIF> = ({
-    dataSources,
-    dataSourcesLoading,
-    setDataSources
-}) => {
+const DataSources:React.FC = () => {
     const initialDataSource = {
         source: '',
         headings: [{id:uuidv4(), value:''}],
@@ -19,6 +15,12 @@ const DataSources:React.FC<DataSourcesPropsIF> = ({
         source: '',
         headings: ['']
     }
+
+    const {
+        dataSources,
+        dataSourcesLoading,
+        setDataSources,
+    }:DataSourcesContextIF = useOutletContext<DataSourcesContextIF>();
 
     const [ copiedText, setCopiedText ] = useState<string>('');
     const [ dataSource, setDataSource ] = useState<DataSourceLocalIF>(initialDataSource)
@@ -274,7 +276,7 @@ const DataSources:React.FC<DataSourcesPropsIF> = ({
     </div>);
 }
 
-interface DataSourcesPropsIF {
+interface DataSourcesContextIF {
     dataSources: DataSourceIF[],
     dataSourcesLoading: boolean,
     dataSourcesError: string,

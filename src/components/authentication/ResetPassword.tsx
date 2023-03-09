@@ -200,7 +200,7 @@ const ResetPassword = () => {
             {!passwordResetId ? <>
                 <div className="mb-3">
                     <label className="w-100">
-                        <p className="form-label text-white fw-semibold">Enter the email address that you used in your profile</p>
+                        <p className="form-label fw-semibold">Enter the email address that you used in your profile</p>
                         <input
                             className="form-control"
                             type="text"
@@ -217,7 +217,7 @@ const ResetPassword = () => {
             </> : <>
                 <div className="mb-3">
                     <label className="w-100">
-                        <p className="form-label text-white fw-semibold">A six digit code has been sent to you on your email address. Please enter it here to reset you password</p>
+                        <p className="form-label fw-semibold">A six digit code has been sent to you on your email address. Please enter it here to reset you password</p>
                         <input
                             className="form-control"
                             type="text"
@@ -234,7 +234,7 @@ const ResetPassword = () => {
                 }
                 <div className="mb-3">
                     <label className="w-100">
-                        <p className="form-label text-white fw-semibold">New Password</p>
+                        <p className="form-label fw-semibold">New Password</p>
                         <input
                             className="form-control"
                             type="password"
@@ -250,7 +250,7 @@ const ResetPassword = () => {
                 }
                 <div className="mb-3">
                     <label className="w-100">
-                        <p className="form-label text-white fw-semibold">Confirm new passsword</p>
+                        <p className="form-label fw-semibold">Confirm new passsword</p>
                         <input
                             className="form-control"
                             type="password"

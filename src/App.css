@@ -19,7 +19,7 @@
   text-align: center;
   text-decoration: none;
   padding: 1rem;
-  color: #fff;
+  color: #000000;
 }
 
 .auth_block {
@@ -29,14 +29,17 @@
 }
 
 .auth_nav a.active {
-  background-color: var(--blue-500);
+  background-color: white;
 }
 
 .auth_wrap {
   padding: 2.5em;
-  background-color: var(--blue-500);
+  background-color: white;
 }
 
+body {
+  background-color: #eee;
+}
 /* @media (prefers-color-scheme: dark) {
   :root {
     color: #fff;

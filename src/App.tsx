@@ -1,5 +1,6 @@
 import './App.css';
 import { Outlet, useLocation } from 'react-router-dom'
+import NavBar from './components/navbar/NavBar';
 
 function App() {
 
@@ -21,16 +22,16 @@ function App() {
 			title: 'Reset Password',
 		},
 		{
-			url: '/data-sources',
+			url: '/dashboard/data-sources',
 			title: 'Data Sources',
 		},
 		{
-			url: '/data',
+			url: '/dashboard/data',
 			title: 'Data',
 		},
 		{
 			url: '/',
-			title: 'SK API',
+			title: 'Home',
 		},
 	]
 	const { pathname } = useLocation();
@@ -44,7 +45,10 @@ function App() {
 
 	return (
 		<div className="App">
-			<Outlet />
+			<NavBar />
+			<div className="container">
+				<Outlet />
+			</div>
 		</div>
 	)
 }

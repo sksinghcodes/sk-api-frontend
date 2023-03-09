@@ -1,10 +1,12 @@
 import api from "../../api";
 import { useCallback, useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useOutletContext, useParams } from "react-router-dom";
 import { DataSourceIF } from "../../types";
 
-const Datas:React.FC<DatasPropsIF> = ({dataSources, dataSourcesLoading, dataSourcesError}) => {
+const Datas:React.FC = () => {
     const { dataSourceId } = useParams();
+
+    const {dataSources, dataSourcesLoading}:DatasContextIF = useOutletContext<DatasContextIF>()
 
     const navigate = useNavigate();
 
@@ -141,7 +143,7 @@ const Datas:React.FC<DatasPropsIF> = ({dataSources, dataSourcesLoading, dataSour
     </>);
 }
 
-interface DatasPropsIF {
+interface DatasContextIF {
     dataSources: DataSourceIF[],
     dataSourcesLoading: boolean,
     dataSourcesError: string,

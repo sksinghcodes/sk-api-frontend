@@ -3,6 +3,14 @@ export interface ContextInterface {
     isAdmin: boolean;
 	checkSignedInStatus: () => void,
 	deviceHeight: string,
+	user: UserIF
+}
+
+export interface UserIF {
+	_id: string
+	email: string,
+	username: string,
+	role: number,
 }
 
 export interface DataSourceLocalIF {

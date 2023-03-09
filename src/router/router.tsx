@@ -6,11 +6,12 @@ import ResetPassword from "../components/authentication/ResetPassword";
 import SignIn from "../components/authentication/SignIn";
 import SignUp from "../components/authentication/SignUp";
 
-import DataWrapper from "../components/dashboard/DataWrapper";
-
 import Authentication from "../pages/Authentication";
 import Dashboard from "../pages/Dashboard";
 import RenderIf from "../private/RenderIf";
+import Home from "../pages/Home";
+import DataSources from "../components/dashboard/DataSources";
+import Datas from "../components/dashboard/Datas";
 
 
 const router = createBrowserRouter([
@@ -18,6 +19,10 @@ const router = createBrowserRouter([
 		path: '/',
 		element: <App />,
 		children: [
+			{
+				path: '',
+				element: <Home />,
+			},
 			{
 				path: 'authentication',
 				element: <RenderIf signedInIs={false}><Authentication /></RenderIf>,
@@ -45,7 +50,7 @@ const router = createBrowserRouter([
 				]
 			},
 			{
-				path: '',
+				path: 'dashboard',
 				element: <RenderIf signedInIs={true}><Dashboard/></RenderIf>,
 				children: [
 					{
@@ -54,15 +59,15 @@ const router = createBrowserRouter([
 					},
 					{
 						path: 'data-sources',
-						element: <DataWrapper />,
+						element: <DataSources />,
 					},
 					{
 						path: 'data',
-						element: <DataWrapper />,
+						element: <Datas />,
 					},
 					{
 						path: 'data/:dataSourceId',
-						element: <DataWrapper />,
+						element: <Datas />,
 					},
 				],
 			},

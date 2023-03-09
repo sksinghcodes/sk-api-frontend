@@ -55,7 +55,7 @@ const VerifyProfile = () => {
         <form onSubmit={handleSubmit}>
             <div className="mb-3">
                 <label className="w-100">
-                    <p className="form-label text-white fw-semibold">A six digit code has been sent to you on your email address. Please enter it here to confirm your profile</p>
+                    <p className="form-label fw-semibold">A six digit code has been sent to you on your email address. Please enter it here to confirm your profile</p>
                     <input
                         className="form-control"
                         type="text"

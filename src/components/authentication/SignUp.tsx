@@ -259,7 +259,7 @@ const SignUp = () => {
 
             <div className="mb-3">
                 <label className="w-100">
-                    <p className="form-label text-white fw-semibold">Choose a Username</p>
+                    <p className="form-label fw-semibold">Choose a Username</p>
                     <input
                         className="form-control"
                         autoComplete="username"
@@ -287,7 +287,7 @@ const SignUp = () => {
             
             <div className="mb-3">
                 <label className="w-100">
-                    <p className="form-label text-white fw-semibold">Email Address</p>
+                    <p className="form-label fw-semibold">Email Address</p>
                     <input
                         className="form-control"
                         autoComplete="email"
@@ -315,7 +315,7 @@ const SignUp = () => {
             
             <div className="mb-3">
                 <label className="w-100">
-                    <p className="form-label text-white fw-semibold">Password</p>
+                    <p className="form-label fw-semibold">Password</p>
                     <input
                         className="form-control"
                         autoComplete="password"
@@ -333,7 +333,7 @@ const SignUp = () => {
             
             <div className="mb-4">
                 <label className="w-100">
-                    <p className="form-label text-white fw-semibold">Confirm Password</p>
+                    <p className="form-label fw-semibold">Confirm Password</p>
                     <input
                         className="form-control"
                         autoComplete="password"

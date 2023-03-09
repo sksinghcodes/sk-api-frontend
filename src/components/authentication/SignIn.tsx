@@ -155,7 +155,7 @@ const SignIn = () => {
         <form onSubmit={handleSubmit}>
             <div className="mb-3">
                 <label className="w-100">
-                    <p className="form-label text-white fw-semibold">Username or Email Address</p>
+                    <p className="form-label fw-semibold">Username or Email Address</p>
                     <input
                         className="form-control"
                         type="text"
@@ -172,10 +172,11 @@ const SignIn = () => {
             </div>
             <div className="mb-4">
                 <label className="w-100">
-                    <p className="form-label text-white fw-semibold">Password</p>
+                    <p className="form-label fw-semibold">Password</p>
                     <div className="input-group">
                         <input
                             className="form-control"
+                            style={{width: 'calc(100% - 40px)'}}
                             type={showPassword ? 'text' : 'password'}
                             name="password"
                             placeholder="Password"
@@ -185,8 +186,9 @@ const SignIn = () => {
                         />
                         <button
                             type="button"
-                            className="btn btn-light"
+                            className="form-control"
                             onClick={() => setShowPassword(!showPassword)}
+                            style={{width: 40}}
                         >
                             <i
                                 className={`bi bi-eye${showPassword ? '' : '-slash'}`}
@@ -210,7 +212,7 @@ const SignIn = () => {
                 <ErrorText>{error}</ErrorText>
             </>}
 
-            <div className="text-white mt-3"><Link className="text-white" to="/authentication/reset-password">Click here</Link> if you have forgotten your password</div>
+            <div className="mt-3"><Link to="/authentication/reset-password">Click here</Link> if you have forgotten your password</div>
         </form>
     );
 }
