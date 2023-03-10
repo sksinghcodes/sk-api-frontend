@@ -111,6 +111,7 @@ const ResetPassword = () => {
 
                         if(data.success){
                             setSuccess(true);
+                            setError('');
                         }
                         
                         if(!data.success && data.validation) {
@@ -135,11 +136,13 @@ const ResetPassword = () => {
                         }
                         
                         if(!data.success && data.error){
+                            setSuccess(false);
                             setError(data.error);
                         }
                     })
                     .catch(error => {
                         setError(error.message)
+                        setSuccess(false);
                         setLoading(false);
                     });
             } else {
@@ -228,10 +231,11 @@ const ResetPassword = () => {
                             autoComplete="username"
                         />
                     </label>
+                    {resetPasswordValidation.code.errorMessage &&
+                        <ErrorText>{resetPasswordValidation.code.errorMessage}</ErrorText>
+                    }
                 </div>
-                {resetPasswordValidation.code.errorMessage &&
-                    <ErrorText>{resetPasswordValidation.code.errorMessage}</ErrorText>
-                }
+                
                 <div className="mb-3">
                     <label className="w-100">
                         <p className="form-label fw-semibold">New Password</p>
@@ -244,10 +248,11 @@ const ResetPassword = () => {
                             onChange={handleChange}
                         />
                     </label>
+                    {resetPasswordValidation.newPassword.errorMessage &&
+                        <ErrorText>{resetPasswordValidation.newPassword.errorMessage}</ErrorText>
+                    }
                 </div>
-                {resetPasswordValidation.newPassword.errorMessage &&
-                    <ErrorText>{resetPasswordValidation.newPassword.errorMessage}</ErrorText>
-                }
+                
                 <div className="mb-3">
                     <label className="w-100">
                         <p className="form-label fw-semibold">Confirm new passsword</p>
@@ -260,10 +265,11 @@ const ResetPassword = () => {
                             onChange={handleChange}
                         />
                     </label>
+                    {resetPasswordValidation.confirmNewPassword.errorMessage &&
+                        <ErrorText>{resetPasswordValidation.confirmNewPassword.errorMessage}</ErrorText>
+                    }
                 </div>
-                {resetPasswordValidation.confirmNewPassword.errorMessage &&
-                    <ErrorText>{resetPasswordValidation.confirmNewPassword.errorMessage}</ErrorText>
-                }
+                
             </>}
             <div className="text-center">
                 <SpinnerButton
