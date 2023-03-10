@@ -53,7 +53,7 @@ const Home = () => {
                 </li>
                 <li>
                     <h3 className="h6">Setup AJAX request on your form page</h3>
-                    <p>Now you can send the data to '{import.meta.env.VITE_API_BASE_URL}' API Route by 'POST' method. The structure of the data will be following</p>
+                    <p>Now you can send the data to '{import.meta.env.VITE_API_BASE_URL}add-data/' API Route by 'POST' method. The structure of the data will be following</p>
                     <pre className="bg-dark text-white"><code>
                         {`
     {
