@@ -34,7 +34,7 @@ const Home = () => {
 
             <ol>
                 {!context.isSignedIn &&
-                    <li>First you <Link to="/authentication/sign-in">sing in</Link></li>
+                    <li>First you <Link to="/authentication/sign-in">sign in</Link></li>
                 }
                 <li>
                     <h3 className="h6">Create Data Source</h3>
@@ -42,7 +42,7 @@ const Home = () => {
                     <ul>
                         <li className="my-3"><img width={500} src={addDataSourceFormEmpty} alt="" /></li>
                         <li className="my-3">
-                            <strong>source:</strong> This is the information about 'where the data will come from?'. if my form is hosted on <a target="_blank" href="https://myusername.github.io">https://myusername.github.io</a>, this is going to be my source.
+                            <strong>source:</strong> This is the information about 'where will the data come from?'. if my form is hosted on <a target="_blank" href="https://myusername.github.io">https://myusername.github.io</a>, this is going to be my source.
                         </li>
                         <li className="my-3">
                             <strong>headings:</strong> This is the information about 'What will be its keys?'. if my form send 'first_name', 'last_name', 'email_address' and 'phone_number', these are going to be my headings.
@@ -53,11 +53,11 @@ const Home = () => {
                 </li>
                 <li>
                     <h3 className="h6">Setup AJAX request on your form page</h3>
-                    <p>Now you can send the data to '{import.meta.env.VITE_API_BASE_URL}' API Route by 'POST' method. The structure of the data will be followwing</p>
+                    <p>Now you can send the data to '{import.meta.env.VITE_API_BASE_URL}' API Route by 'POST' method. The structure of the data will be following</p>
                     <pre className="bg-dark text-white"><code>
                         {`
     {
-        key: '--the key generated for this datasource',
+        key: '--the key generated for this datasource--',
         data: {
             first_name: '--first_name input value from form--',
             last_name: '--last_name input value from form--',
