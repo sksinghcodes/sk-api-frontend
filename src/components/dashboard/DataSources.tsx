@@ -238,7 +238,7 @@ const DataSources:React.FC = () => {
                         <tr>
                             <th className="pb-4"></th>
                             <td className="pe-4 pb-4">
-                                <Link className="btn btn-sm btn-primary me-2" to={`/data/${dataSource._id}`}>Show Data</Link>
+                                <Link className="btn btn-sm btn-primary me-2" to={`/dashboard/data/${dataSource._id}`}>Show Data</Link>
                                 <button onClick={() => deleteDataSource(dataSource._id as string)} className="btn btn-sm btn-danger me-2">Delete</button>
 
                                 {dataSourcesProcessing.includes(dataSource._id as string) &&
