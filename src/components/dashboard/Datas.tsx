@@ -80,7 +80,7 @@ const Datas:React.FC = () => {
                 <select
                     className="form-select"
                     value={dataSourceId}
-                    onChange={e => navigate('/data/' + e.target.value)}
+                    onChange={e => navigate('/dashboard/data/' + e.target.value)}
                 >
                     {dataSources.map(dataSource => (
                         <option key={dataSource._id} value={dataSource._id}>{dataSource.source}</option>

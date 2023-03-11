@@ -8,9 +8,6 @@ import ErrorText from "../helpers/ErrorText";
 import SpinnerButton from "../helpers/SpinnerButton";
 
 const SignUp = () => {
-
-    const context = useContext(Context)
-
     const navigate = useNavigate();
 
     const [ error, setError ] = useState<string>('');
