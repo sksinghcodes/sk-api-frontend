@@ -2,9 +2,11 @@ import React, { useState, useEffect } from "react";
 import DataSourceForm from "./DataSourceForm";
 import { v4 as uuidv4 } from "uuid";
 import { Link, useOutletContext } from 'react-router-dom'
-import { DataSourceFormErrors, DataSourceIF, DataSourceLocalIF, FormMode } from "../../types";
+import { DataSourceFormErrors, DataSourceIF, DataSourceLocalIF, CodeType } from "../../types";
 import { Modal, Tooltip } from 'bootstrap';
+import hljs from "highlight.js";
 import api from "../../api";
+import generateCode from "../../utils/generateCode";
 
 const DataSources:React.FC = () => {
     const initialDataSource = {
@@ -23,6 +25,7 @@ const DataSources:React.FC = () => {
     }:DataSourcesContextIF = useOutletContext<DataSourcesContextIF>();
 
     const [ copiedText, setCopiedText ] = useState<string>('');
+    const [ codeType, setCodeType ] = useState<CodeType>(CodeType.AXIOS)
     const [ dataSource, setDataSource ] = useState<DataSourceLocalIF>(initialDataSource)
     const [ addingDataSource, setAddingDataSource ] = useState<boolean>(false);
     const [ dataSourcesProcessing, setDataSourcesProcessing ] = useState<string[]>([]);
@@ -80,6 +83,7 @@ const DataSources:React.FC = () => {
     useEffect(() => {
         const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
         const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new Tooltip(tooltipTriggerEl))
+        hljs.highlightAll();
     }, [dataSources.length])
 
     const validate = (dataSource:DataSourceLocalIF) => {
@@ -173,6 +177,37 @@ const DataSources:React.FC = () => {
         setDataSource(dataSourceCopy);
     }
 
+    const copyButton = (
+        copiedValue:string,
+        actualValue:string,
+        setState: React.Dispatch<React.SetStateAction<string>>,
+        white?:boolean,
+    ) => (<>
+        <button
+            className={"btn position-absolute top-0 end-0" + (white ? " text-white" : "")}
+            hidden={copiedValue === actualValue}
+            data-bs-toggle="tooltip"
+            data-bs-title={'Copy to clipboard'}
+            onClick={() => {
+                navigator.clipboard.writeText(actualValue || '');
+                setState(actualValue || '')
+            }}
+        >
+            <i className="bi bi-clipboard"></i>
+        </button>
+        <button
+            className={"btn position-absolute top-0 end-0" + (white ? " text-white" : "")}
+            hidden={copiedValue !== actualValue}
+            data-bs-toggle="tooltip"
+            data-bs-title={'Copied'}
+            onClick={() => {
+                navigator.clipboard.writeText(actualValue || '');
+                setState(actualValue || '')
+            }}
+        >
+            <i className="bi bi-clipboard-check"></i>
+        </button>
+    </>);
 
     if(dataSourcesLoading){
         return <div className="py-4">
@@ -206,26 +241,7 @@ const DataSources:React.FC = () => {
                             <td className="pe-4" style={{overflowWrap: 'anywhere'}}>
                                 <div className="position-relative pe-5">
                                     {dataSource.key}
-                                    <button
-                                        className="btn position-absolute top-0 end-0"
-                                        hidden={copiedText === dataSource.key}
-                                        data-bs-toggle="tooltip"
-                                        data-bs-title={'Copy to clipboard'}
-                                        onClick={() => {
-                                            navigator.clipboard.writeText(dataSource.key || '');
-                                            setCopiedText(dataSource.key || '')
-                                        }}
-                                    >
-                                        <i className="bi bi-clipboard"></i>
-                                    </button>
-                                    <button
-                                        className="btn position-absolute top-0 end-0"
-                                        hidden={copiedText !== dataSource.key}
-                                        data-bs-toggle="tooltip"
-                                        data-bs-title={'Copied'}
-                                    >
-                                        <i className="bi bi-clipboard-check"></i>
-                                    </button>
+                                    {copyButton(copiedText, dataSource.key || '', setCopiedText)}
                                 </div>
                             </td>
                         </tr>
@@ -238,8 +254,86 @@ const DataSources:React.FC = () => {
                         <tr>
                             <th className="pb-4"></th>
                             <td className="pe-4 pb-4">
-                                <Link className="btn btn-sm btn-primary me-2" to={`/dashboard/data/${dataSource._id}`}>Show Data</Link>
-                                <button onClick={() => deleteDataSource(dataSource._id as string)} className="btn btn-sm btn-danger me-2">Delete</button>
+
+                                <Link
+                                    className="btn btn-sm btn-primary me-2"
+                                    to={`/dashboard/data/${dataSource._id}`}
+                                >Show Data</Link>
+
+                                <button
+                                    onClick={() => deleteDataSource(dataSource._id as string)}
+                                    className="btn btn-sm btn-danger me-2"
+                                >Delete</button>
+
+                                <button
+                                    className="btn btn-sm btn-primary"
+                                    type="button"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target={"#collapse"+dataSource._id}
+                                    aria-expanded="false"
+                                    aria-controls="collapseExample"
+                                >
+                                    AJAX Request Code
+                                </button>
+
+                                <div className="collapse pt-3" id={"collapse"+dataSource._id}>
+                                    <label className="me-4">
+                                        <input
+                                            type="radio"
+                                            className="me-2 form-check-input"
+                                            checked={codeType === CodeType.AXIOS}
+                                            onChange={() => setCodeType(CodeType.AXIOS)}
+                                        />
+                                        axios
+                                    </label>
+
+                                    <label className="me-4">
+                                        <input
+                                            type="radio"
+                                            className="me-2 form-check-input"
+                                            checked={codeType === CodeType.FETCH}
+                                            onChange={() => setCodeType(CodeType.FETCH)}
+                                        />
+                                        fetch
+                                    </label>
+
+                                    <label className="me-4">
+                                        <input
+                                            type="radio"
+                                            className="me-2 form-check-input"
+                                            checked={codeType === CodeType.XHR}
+                                            onChange={() => setCodeType(CodeType.XHR)}
+                                        />
+                                        xhr
+                                    </label>
+
+                                    <div hidden={codeType !== CodeType.AXIOS} className="position-relative">
+                                        {copyButton(copiedText, generateCode(CodeType.AXIOS, dataSource.key || '', dataSource.headings), setCopiedText, true)}
+                                        <pre className="rounded mt-2">
+                                            <code className="language-javascript">
+                                                {generateCode(CodeType.AXIOS, dataSource.key || '', dataSource.headings)}
+                                            </code>
+                                        </pre>
+                                    </div>
+
+                                    <div hidden={codeType !== CodeType.FETCH} className="position-relative">
+                                        {copyButton(copiedText, generateCode(CodeType.FETCH, dataSource.key || '', dataSource.headings), setCopiedText, true)}
+                                        <pre className="rounded mt-2">
+                                            <code className="language-javascript">
+                                                {generateCode(CodeType.FETCH, dataSource.key || '', dataSource.headings)}
+                                            </code>
+                                        </pre>
+                                    </div>
+
+                                    <div hidden={codeType !== CodeType.XHR} className="position-relative">
+                                        {copyButton(copiedText, generateCode(CodeType.XHR, dataSource.key || '', dataSource.headings), setCopiedText, true)}
+                                        <pre className="rounded mt-2">
+                                            <code className="language-javascript">
+                                                {generateCode(CodeType.XHR, dataSource.key || '', dataSource.headings)}
+                                            </code>
+                                        </pre>
+                                    </div>
+                                </div>
 
                                 {dataSourcesProcessing.includes(dataSource._id as string) &&
                                     <div className="bg-white bg-opacity-50 position-absolute start-0 top-0 w-100 h-100 d-flex justify-content-center align-items-center">

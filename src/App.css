@@ -40,6 +40,18 @@
 body {
   background-color: #eee;
 }
+
+.hljs * {
+  word-break: break-all;
+  white-space: pre-wrap;
+}
+
+pre {
+  tab-size: 4;
+}
+
+
+
 /* @media (prefers-color-scheme: dark) {
   :root {
     color: #fff;

@@ -6,6 +6,12 @@ export interface ContextInterface {
 	user: UserIF
 }
 
+export enum CodeType {
+	AXIOS,
+	FETCH,
+	XHR,
+}
+
 export interface UserIF {
 	_id: string
 	email: string,
@@ -98,9 +104,4 @@ export interface ResetPasswordValidationRulesIF {
 export interface DataSourceFormErrors {
 	source: string,
     headings: string[],
-}
-
-export enum FormMode {
-	UPDATE,
-	CREATE,
 }
