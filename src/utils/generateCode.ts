@@ -1,7 +1,12 @@
 import { CodeType } from "../types";
 
 const generateCode = (codeType:CodeType, key:string, headings:string[]) => {
-    
+    let url = import.meta.env.VITE_API_BASE_URL;
+
+    if(url.endsWith('/')){
+        url = url.slice(0, url.length - 1);
+    }
+
     if(codeType === CodeType.AXIOS){
         let obj = '{';
         headings.forEach((heading:string) => {
@@ -9,7 +14,7 @@ const generateCode = (codeType:CodeType, key:string, headings:string[]) => {
         })
         obj += '\n\t}';
 
-		const codeForAxios = `axios.post('${import.meta.env.VITE_API_BASE_URL}/add-data', {
+		const codeForAxios = `axios.post('${url}/add-data', {
     key: '${key}',
     data: ${obj},
 })
@@ -33,7 +38,7 @@ const generateCode = (codeType:CodeType, key:string, headings:string[]) => {
             obj += '\n\t\t\t' + heading + ': \'\',';
         })
         obj += '\n\t\t}';
-    const codeForFetch = `fetch('${import.meta.env.VITE_API_BASE_URL}/add-data', {
+    const codeForFetch = `fetch('${url}/add-data', {
     method: 'POST',
     headers: {
         'Content-Type': 'application/json'
@@ -64,7 +69,7 @@ const generateCode = (codeType:CodeType, key:string, headings:string[]) => {
         })
         obj += '\n\t}';
         const codeForXHR = `const xhr = new XMLHttpRequest();
-xhr.open('POST', '${import.meta.env.VITE_API_BASE_URL}/add-data');
+xhr.open('POST', '${url}/add-data');
 xhr.setRequestHeader('Content-Type', 'application/json')
 xhr.onreadystatechange = function() {
     if(this.readyState === 4){
