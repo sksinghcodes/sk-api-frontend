@@ -1,5 +1,5 @@
 import React from "react";
-import { DataSourceFormErrors, DataSourceLocalIF, FormMode } from "../../types";
+import { DataSourceFormErrors, DataSourceLocalIF } from "../../types";
 import ErrorText from "../helpers/ErrorText";
 import SpinnerButton from "../helpers/SpinnerButton";
 
